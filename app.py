@@ -23,8 +23,6 @@ def extract_text_from_pdf(pdf_path):
 
 def extract_entities(text):
     emails = re.findall(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', text)
-    
-    # Extract names assuming they start with an uppercase letter and have at least two words
     name_matches = re.findall(r'\b[A-Z][a-z]+\s[A-Z][a-z]+\b', text)
 
     names = name_matches if name_matches else ["N/A"]
@@ -35,7 +33,7 @@ def extract_entities(text):
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    global global_results  # Use global results to persist data
+    global global_results
     global_results = []
 
     if request.method == 'POST':
@@ -58,18 +56,15 @@ def index():
         tfidf_vectorizer = TfidfVectorizer()
         job_desc_vector = tfidf_vectorizer.fit_transform([job_description])
 
-        # Rank resumes based on similarity
-        ranked_resumes = []
+        shortlisted_cand = []
         for (names, emails, resume_text) in processed_resumes:
             resume_vector = tfidf_vectorizer.transform([resume_text])
             similarity = cosine_similarity(job_desc_vector, resume_vector)[0][0] * 100 
-            ranked_resumes.append((names, emails, similarity))
+            shortlisted_cand.append((names, emails, similarity))
 
-        # Sort resumes by similarity score
-        ranked_resumes.sort(key=lambda x: x[2], reverse=True)
+        shortlisted_cand.sort(key=lambda x: x[2], reverse=True)
 
-        global_results = ranked_resumes  # Store results globally
-
+        global_results = shortlisted_cand
     return render_template('index.html', results=global_results)
 
 @app.route('/download_csv')
@@ -77,7 +72,7 @@ def download_csv():
     if not global_results:
         return "No data to download", 400
 
-    csv_filename = "ranked_resumes.csv"
+    csv_filename = "shortlisted_cand.csv"
     csv_full_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), csv_filename)
 
     with open(csv_full_path, "w", newline="") as csv_file:
@@ -89,7 +84,7 @@ def download_csv():
             email = emails[0] if emails else "N/A"
             writer.writerow([rank, name, email, similarity])
 
-    return send_file(csv_full_path, as_attachment=True, download_name="ranked_resumes.csv")
+    return send_file(csv_full_path, as_attachment=True, download_name="shortlisted_cand.csv")
 
 if __name__ == '__main__':
     app.run(debug=True)
