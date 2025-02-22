@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>HR Resume Ranking</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        /* Import Google Font */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #0D1117;
+            color: #E6EDF3;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            width: 100%;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
+        }
+
+        /* Download Button */
+        .download-btn {
+            background: linear-gradient(135deg, #2A9D8F, #1E88E5);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: all 0.3s ease-in-out;
+            border: none;
+        }
+
+        .download-btn:hover {
+            background: linear-gradient(135deg, #1E88E5, #2A9D8F);
+            transform: scale(1.05);
+        }
+
+        /* Form & Container */
+        .container {
+            width: 90%;
+            max-width: 700px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 12px rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+            animation: fadeIn 0.7s ease-in-out;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin: 15px 0 5px;
+            text-align: left;
+        }
+
+        textarea, input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            margin-top: 5px;
+            border: none;
+            border-radius: 8px;
+            outline: none;
+            transition: 0.2s;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        input[type="file"]::file-selector-button {
+            background: #2A9D8F;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        input[type="submit"] {
+            background: #1E88E5;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease-in-out;
+            margin-top: 10px;
+        }
+
+        input[type="submit"]:hover {
+            background: #2A9D8F;
+            transform: scale(1.05);
+        }
+
+        /* Table */
+        table {
+            width: 90%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            box-shadow: 0px 4px 12px rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(12px);
+            animation: slideIn 0.8s ease-in-out;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+        }
+
+        th {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div> HR Resume Ranking Tool</div>
+        {% if results %}
+        <a href="{{ url_for('download_csv') }}" class="download-btn">📥 Download CSV</a>
+        {% endif %}
+    </div>
+
+    <div class="container">
+        <form action="/" method="post" enctype="multipart/form-data">
+            <label for="job_description">📄 Job Description:</label>
+            <textarea name="job_description" rows="4" required></textarea>
+
+            <label for="resume_files">📂 Upload Resumes (PDF):</label>
+            <input type="file" name="resume_files" accept=".pdf" multiple required>
+
+            <input type="submit" value="⚡ Analyze Resumes">
+        </form>
+    </div>
+
+    {% if results %}
+    <h2>🏆 Ranked Resumes</h2>
+    <table>
+        <tr>
+            <th>🏅 Rank</th>
+            <th>📝 Name</th>
+            <th>📧 Email</th>
+            <th>📊 Similarity (%)</th>
+        </tr>
+        {% for result in results %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ result[0][0] if result[0] else "N/A" }}</td>
+            <td>{{ result[1][0] if result[1] else "N/A" }}</td>
+            <td>{{ result[2] | round(2) }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+</body>
+</html>
