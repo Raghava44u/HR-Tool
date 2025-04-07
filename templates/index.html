@@ -3,186 +3,236 @@
 <head>
     <title>HR Resume Ranking</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Import Google Font */
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
-
-        /* Global Styles */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Inter', sans-serif;
         }
 
         body {
-            background: #0D1117;
-            color: #E6EDF3;
-            text-align: center;
+            background-color: #1e1e2f;
+            color: #f0f0f0;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100vh;
+            padding: 20px;
         }
 
-        /* Header */
         .header {
             width: 100%;
-            padding: 20px;
+            max-width: 1200px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 24px;
-            font-weight: bold;
-            backdrop-filter: blur(10px);
-            background: rgba(255, 255, 255, 0.05);
-            box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #2a2a40;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
         }
 
-        /* Download Button */
+        .header div {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
         .download-btn {
-            background: linear-gradient(135deg, #2A9D8F, #1E88E5);
-            color: white;
-            padding: 12px 20px;
-            border-radius: 10px;
-            font-size: 16px;
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            color: #fff;
+            padding: 12px 18px;
+            border-radius: 8px;
+            font-size: 15px;
             font-weight: bold;
             text-decoration: none;
-            transition: all 0.3s ease-in-out;
             border: none;
         }
 
-        .download-btn:hover {
-            background: linear-gradient(135deg, #1E88E5, #2A9D8F);
-            transform: scale(1.05);
-        }
-
-        /* Form & Container */
         .container {
-            width: 90%;
+            width: 100%;
             max-width: 700px;
-            background: rgba(255, 255, 255, 0.1);
+            background: #292942;
             padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0px 4px 12px rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(15px);
-            animation: fadeIn 0.7s ease-in-out;
+            border-radius: 14px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.3);
         }
 
         label {
-            font-weight: bold;
             display: block;
-            margin: 15px 0 5px;
-            text-align: left;
+            margin-bottom: 8px;
+            font-weight: 600;
         }
 
         textarea, input[type="file"] {
             width: 100%;
             padding: 12px;
-            margin-top: 5px;
-            border: none;
+            margin-bottom: 20px;
+            background: #1f1f30;
+            border: 1px solid #555;
+            color: #fff;
             border-radius: 8px;
-            outline: none;
-            transition: 0.2s;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
         }
 
         input[type="file"]::file-selector-button {
-            background: #2A9D8F;
+            background-color: #0072ff;
             color: white;
             border: none;
-            padding: 10px;
-            cursor: pointer;
+            padding: 8px 14px;
             border-radius: 5px;
+            cursor: pointer;
         }
 
         input[type="submit"] {
-            background: #1E88E5;
-            color: white;
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(to right, #00c6ff, #0072ff);
             border: none;
-            padding: 12px 20px;
+            color: white;
             font-size: 16px;
-            cursor: pointer;
             border-radius: 8px;
-            transition: all 0.3s ease-in-out;
-            margin-top: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
 
         input[type="submit"]:hover {
-            background: #2A9D8F;
-            transform: scale(1.05);
+            opacity: 0.9;
         }
 
-        /* Table */
         table {
-            width: 90%;
-            margin: 20px auto;
+            width: 100%;
+            margin-top: 40px;
             border-collapse: collapse;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            box-shadow: 0px 4px 12px rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(12px);
-            animation: slideIn 0.8s ease-in-out;
+            background: #313151;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.25);
         }
 
         th, td {
-            padding: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 15px;
             text-align: center;
         }
 
         th {
-            background: rgba(255, 255, 255, 0.3);
-            color: white;
-            font-weight: bold;
+            background: #0072ff;
+            color: #fff;
         }
 
         tr:nth-child(even) {
-            background: rgba(255, 255, 255, 0.1);
+            background-color: #2a2a40;
         }
 
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+        tr:hover {
+            background-color: #3a3a5c;
         }
 
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
+        h2 {
+            margin-top: 40px;
+            font-size: 24px;
+            color: #ffffff;
+        }
+
+        /* Chatbot button and popup remains untouched */
+        #chat-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #2A9D8F;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+        }
+
+        #chat-popup {
+            display: none;
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 350px;
+            height: 450px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            border-radius: 14px;
+            padding: 15px;
+            z-index: 1001;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        #chat-response {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        #chat-popup textarea {
+            width: 100%;
+            height: 70px;
+            resize: none;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 8px;
+            font-size: 14px;
+        }
+
+        #chat-popup button {
+            margin-top: 10px;
+            width: 100%;
+            padding: 12px;
+            background-color: #1E88E5;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #chat-popup button:hover {
+            background-color: #2A9D8F;
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <div> HR Resume Ranking Tool</div>
+        <div>HR Resume Ranking Tool</div>
         {% if results %}
-        <a href="{{ url_for('download_csv') }}" class="download-btn">📥 Download CSV</a>
+        <a href="{{ url_for('download_csv') }}" class="download-btn"> Download CSV</a>
         {% endif %}
     </div>
 
     <div class="container">
         <form action="/" method="post" enctype="multipart/form-data">
-            <label for="job_description">📄 Job Description:</label>
+            <label for="job_description">Job Description:</label>
             <textarea name="job_description" rows="4" required></textarea>
 
-            <label for="resume_files">📂 Upload Resumes (PDF):</label>
+            <label for="resume_files">Upload Resumes (PDF):</label>
             <input type="file" name="resume_files" accept=".pdf" multiple required>
 
-            <input type="submit" value="⚡ Analyze Resumes">
+            <input type="submit" value="Analyze Resumes">
         </form>
     </div>
 
     {% if results %}
-    <h2>🏆 Ranked Resumes</h2>
+    <h2>Ranked Resumes</h2>
     <table>
         <tr>
-            <th>🏅 Rank</th>
-            <th>📝 Name</th>
-            <th>📧 Email</th>
-            <th>📊 Similarity (%)</th>
+            <th>Rank</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Similarity (%)</th>
         </tr>
         {% for result in results %}
         <tr>
@@ -194,5 +244,58 @@
         {% endfor %}
     </table>
     {% endif %}
+
+    <!-- Chatbot Floating Button -->
+    <button id="chat-button">💬</button>
+
+    <!-- Chatbot Popup -->
+    <div id="chat-popup">
+        <div id="chat-response"></div>
+        <textarea id="user-message" placeholder="Ask me anything..."></textarea>
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <script>
+        const chatButton = document.getElementById("chat-button");
+        const chatPopup = document.getElementById("chat-popup");
+        const responseDiv = document.getElementById("chat-response");
+
+        chatButton.addEventListener("click", () => {
+            chatPopup.style.display = chatPopup.style.display === "block" ? "none" : "block";
+        });
+
+        function sendMessage() {
+            const messageBox = document.getElementById("user-message");
+            const message = messageBox.value.trim();
+            if (!message) return;
+
+            const userMsg = document.createElement("div");
+            userMsg.textContent = "You: " + message;
+            userMsg.style.fontWeight = "bold";
+            userMsg.style.marginBottom = "5px";
+            responseDiv.appendChild(userMsg);
+
+            fetch('/gemini-chat', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ message: message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const botMsg = document.createElement("div");
+                botMsg.textContent = "Bot: " + data.response;
+                botMsg.style.marginBottom = "10px";
+                responseDiv.appendChild(botMsg);
+                responseDiv.scrollTop = responseDiv.scrollHeight;
+            })
+            .catch(error => {
+                const errMsg = document.createElement("div");
+                errMsg.textContent = "Error: " + error;
+                responseDiv.appendChild(errMsg);
+            });
+
+            messageBox.value = "";
+        }
+    </script>
 </body>
 </html>
