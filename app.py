@@ -12,7 +12,7 @@ app = Flask(__name__)
 nlp = spacy.load("en_core_web_sm")
 
 # Gemini API Configuration
-genai.configure(api_key="AIzaSyCZ-NE8shXLnrm-u7bTj1RhMdfIqaXM2jA")
+genai.configure(api_key="")
 model = genai.GenerativeModel("gemini-1.5-flash")
 
 global_results = []
