@@ -1,13 +1,14 @@
 from flask import Flask, render_template, request, send_file, jsonify
 import spacy
-import PyPDF2
+import pdfplumber
+import docx 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import re
 import csv
 import os
 import google.generativeai as genai
-
+from kafka_utils.kafka_producer import send_to_kafka
 app = Flask(__name__)
 nlp = spacy.load("en_core_web_sm")
 
@@ -18,18 +19,29 @@ model = genai.GenerativeModel("gemini-1.5-flash")
 global_results = []
 
 def extract_text_from_pdf(pdf_path):
-    with open(pdf_path, "rb") as pdf_file:
-        pdf_reader = PyPDF2.PdfReader(pdf_file)
+    with pdfplumber.open(pdf_path) as pdf:
         text = ""
-        for page in pdf_reader.pages:
+        for page in pdf.pages:
             text += page.extract_text()
         return text
 
+def extract_text_from_docx(docx_path):
+    doc = docx.Document(docx_path)
+    text = ""
+    for para in doc.paragraphs:
+        text += para.text + "\n"
+    for table in doc.tables:
+        for row in table.rows:
+            for cell in row.cells:
+                text += cell.text + "\n"
+    return text
+
 def extract_entities(text):
     emails = re.findall(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', text)
-    name_matches = re.findall(r'\b[A-Z][a-z]+\s[A-Z][a-z]+\b', text)
-    names = name_matches if name_matches else ["N/A"]
-    emails = emails if emails else ["N/A"]
+    print("Emails found: ", emails)
+    name_matches = re.findall(r'\b([A-Z][a-z]+(?: [A-Z][a-z]+)+)\b', text)
+    names = name_matches if name_matches else ["Name"]
+    emails = emails if emails else ["Email"]
     return emails, names
 
 @app.route('/', methods=['GET', 'POST'])
@@ -49,7 +61,13 @@ def index():
             resume_path = os.path.join("uploads", resume_file.filename)
             resume_file.save(resume_path)
 
-            resume_text = extract_text_from_pdf(resume_path)
+            if resume_path.lower().endswith(".pdf"):
+                resume_text = extract_text_from_pdf(resume_path)
+            elif resume_path.lower().endswith(".docx"):
+                resume_text = extract_text_from_docx(resume_path)
+            else:
+                resume_text = ""
+
             emails, names = extract_entities(resume_text)
             processed_resumes.append((names, emails, resume_text))
 
@@ -61,6 +79,12 @@ def index():
             resume_vector = tfidf_vectorizer.transform([resume_text])
             similarity = cosine_similarity(job_desc_vector, resume_vector)[0][0] * 100
             shortlisted_cand.append((names, emails, similarity))
+
+            # Kafka call to send email notification
+            if emails and names:
+                email = emails[0]
+                name = names[0]
+                send_to_kafka(email, name, similarity, "Company_XYZ")
 
         shortlisted_cand.sort(key=lambda x: x[2], reverse=True)
         global_results = shortlisted_cand
@@ -80,8 +104,8 @@ def download_csv():
         writer.writerow(["Rank", "Name", "Email", "Similarity"])
 
         for rank, (names, emails, similarity) in enumerate(global_results, start=1):
-            name = names[0] if names else "N/A"
-            email = emails[0] if emails else "N/A"
+            name = names[0] if names else "Name not extracted"
+            email = emails[0] if emails else "Email not extracted"
             writer.writerow([rank, name, email, similarity])
 
     return send_file(csv_full_path, as_attachment=True, download_name="shortlisted_cand.csv")

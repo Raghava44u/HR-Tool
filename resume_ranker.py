@@ -11,7 +11,7 @@ csv_filename = "ranked_resumes.csv"
 nlp = spacy.load("en_core_web_sm")
 
 # Sample job description
-job_description = "NLP Specialist: Develop and implement NLP algorithms. Proficiency in Python, NLP libraries, and ML frameworks required."
+job_description = "NLP Specialist: Develop and implement NLP algorithms. Proficiency in Python Java and Fullstack, NLP libraries, and ML frameworks required."
 
 # List of resume PDF file paths
 resume_paths = ["resume1.pdf", "resume2.pdf", "resume3.pdf"]  # Add more file paths here
